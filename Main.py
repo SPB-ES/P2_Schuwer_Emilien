@@ -90,10 +90,6 @@ def scrap_produit(url):
     with open(f'{resultat[2]}.jpg', 'wb') as handler:
         handler.write(img_data)
     
-    # for i in resultat:
-    #     print(i)
-    
-
 
 
 
