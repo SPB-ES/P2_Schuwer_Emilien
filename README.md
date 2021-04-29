@@ -5,7 +5,7 @@ Installation et exécution du script de Webscrapping
     ou 
     python -m venv env
 
-2) Activation:
+2) Activation: 
     Commande Windows: env\Scripts\activate.bat
     
     Commande linux/Mac: env/bin/activate
