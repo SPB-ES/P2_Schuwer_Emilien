@@ -86,6 +86,7 @@ def scrap_produit(url):
         test_writer.writerow(TITRES)
         test_writer.writerow(resultat)
     
+
     img_data = requests.get(resultat[9]).content #Télécharge l'image depuis l'url
     with open(f'{resultat[2]}.jpg', 'wb') as handler:
         handler.write(img_data)
@@ -97,12 +98,13 @@ def recuperer_categorie():
     """
     Fonction qui récupère le nom et l'url de chaque catégorie 
     sous format dictionnaire
+
     """
     re = requests.get('http://books.toscrape.com/catalogue/category/books_1/index.html')
     soup = bs(re.content,'lxml')
     categories = soup.find_all('a',href=True)
     categories = categories[3:]
-    a=0
+    a = 0
     cat_name = list()
     taille_categorie = len(cat_name)
     cat_url = list()
@@ -122,6 +124,7 @@ def recuperer_categorie():
 
 def recup_url_livre(urlcat):
     """
+
     Fonction utilisée pour récupérer l'url de chaque livre d'une catégorie donnée
     en tenant compte du nombre de page si plus de 20 livres dans une catégorie
 
@@ -151,7 +154,6 @@ def recup_url_livre(urlcat):
     
     if nombres_pages_categorie > 1:
         
-        #bancal as fuck
         for num_page in range(2,nombres_pages_categorie + 1):
             url_page = urlcat[:-10] + 'page-'+ str(num_page) + '.html'
             r = requests.get(url_page)
