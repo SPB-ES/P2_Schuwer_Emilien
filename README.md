@@ -1,5 +1,7 @@
 Installation et exécution du script de Webscrapping 
 
+Objectif de ce script de récupérer de l'intégralité des données de relatives aux livres présents sur le  site Books to scrape
+
 1) Création environnement virtuel:
     python3 -m venv env
     ou 
