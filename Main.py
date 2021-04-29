@@ -40,9 +40,7 @@ def scrap_produit(url):
     universal_product_code = universal_product_code[0].text
     resultat.append(universal_product_code)
 
-    # title = soup.find('h1').text.replace(':',' ').replace(',',' ').replace('/',' ').replace('\'','')
-    title = slugify(soup.find('h1').text) # Slugify a été choisi pour éviter les conflits avec les caractères interdits pour nommer un fichier
-   
+    title = slugify(soup.find('h1').text) # Slugify a été choisi pour éviter les conflits avec les caractères interdits pour nommer un fichier   
     resultat.append(title)
 
     price_including_tax = soup.findAll('td')
@@ -140,11 +138,11 @@ def recup_url_livre(urlcat):
     nombres_pages_categorie = nombre_livres_categorie // 20 # Détermine le nombre de page à partir d'un nombre d'article
 
     if nombre_livres_categorie % 20 > 0:
-        nombres_pages_categorie +=1
+        nombres_pages_categorie += 1
     
     url_livres = (soup.find_all('h3'))
-    taille=len(url_livres)
-    completion=0
+    taille = len(url_livres)
+    completion = 0
     for url_livre in url_livres:
         completion += 1
         scrap_produit('http://books.toscrape.com/catalogue/'+ (url_livre.a['href'])[9:])
