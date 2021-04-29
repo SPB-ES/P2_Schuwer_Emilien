@@ -161,7 +161,7 @@ def recup_url_livre(urlcat):
                 completion += 1
                 scrap_produit('http://books.toscrape.com/catalogue/'+ (url_livre.a['href'])[9:])
                 print(f'Avancement: {completion} sur {nombre_livres_categorie}')
-                print('________________________________________________________________')
+
     nombre_livres_categorie = 0
     url_livres =''
 
