@@ -23,11 +23,14 @@ TITRES = [ #liste des entêtes
 # le nom du fichier comprendra la date en cas d'une utilisation par jour pour un suivi précis de l'activité du site ciblé
 
 today = date.today().strftime("%d-%m-%Y") 
-# Date du jour format européen
+# Date du jour au format européen
 repertoire = os.getcwd()
 repdate = f'{repertoire}\Résultats du {today}'
-os.mkdir(repdate)
-reptravail = os.chdir(repdate)
+try:
+    os.mkdir(repdate)
+    reptravail = os.chdir(repdate)
+except:
+    reptravail = os.chdir(repdate)
 
   
 def scrap_produit(url):
@@ -90,6 +93,16 @@ def scrap_produit(url):
     image_url = (str(image_url)[inter_image_url:-10])
     image_url = debut_url_image + image_url
     resultat.append(image_url)
+
+
+
+    # Création de l'outil pour créer les sous répertoires pour chaque catégorie
+    try:
+        os.mkdir(f'{repdate}/{resultat[7]}')
+        reptravail = os.chdir(f'{repdate}/{resultat[7]}')
+    except:
+        reptravail = os.chdir(f'{repdate}/{resultat[7]}')
+
     with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Créer le CSV et placer les entêtes
         test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
         test_writer.writerow(TITRES)
@@ -97,8 +110,24 @@ def scrap_produit(url):
     
 
     img_data = requests.get(resultat[9]).content #Télécharge l'image depuis l'url
-    with open(f'{resultat[2]}.jpg', 'wb') as handler:
-        handler.write(img_data)
+    # Mise en place d'une vérification que le titre ne fasse pas plus de 150 caractères (taille limite du titre d'un fichier)
+    try:
+        with open(f'{resultat[2]}.jpg', 'wb') as handler:
+            handler.write(img_data)
+    except:
+        titre = list()
+        compteur = 0
+        for i in resultat[2]:
+            if compteur <= 149:
+                titre.append(resultat[2][compteur])
+                compteur += 1
+            else:
+                continue
+        titre = ''.join(titre)
+        with open(f'{titre}.jpg', 'wb') as handler:
+            handler.write(img_data)
+
+        
     
 
 
@@ -172,16 +201,17 @@ def recup_url_livre(urlcat):
                 completion += 1
                 scrap_produit('http://books.toscrape.com/catalogue/'+ (url_livre.a['href'])[9:])
                 print(f'Avancement: {completion} sur {nombre_livres_categorie}')
+                print('-----------------------------------------------------------------')
 
     nombre_livres_categorie = 0
     url_livres =''
 
 
 completion_categorie = 0
-taille_categorie = 0 
+taille_categorie = len(recuperer_categorie())
 
-
-# for x in recuperer_categorie():
-#         completion_categorie += 1
-#         recup_url_livre(x)
-#         print(f'Avancement catégorie : {completion_categorie} sur {taille_categorie}')
+for x in recuperer_categorie():
+        completion_categorie += 1
+        recup_url_livre(x)
+        print(f'Avancement catégorie : {completion_categorie} sur {taille_categorie}')
+        print('_________________________________________________________________________')
