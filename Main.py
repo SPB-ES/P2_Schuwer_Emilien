@@ -3,6 +3,7 @@ import requests
 import csv
 import re
 from slugify import slugify
+import os
 
 TITRES = [ #liste des entêtes
         'product_page_url',
@@ -170,9 +171,9 @@ completion_categorie = 0
 taille_categorie = 0 
 
 
-for x in recuperer_categorie():
-        completion_categorie += 1
-        recup_url_livre(x)
-        print(f'Avancement catégorie : {completion_categorie} sur {taille_categorie}')
+# for x in recuperer_categorie():
+#         completion_categorie += 1
+#         recup_url_livre(x)
+#         print(f'Avancement catégorie : {completion_categorie} sur {taille_categorie}')
 
-    
+print ('test ok !') 
