@@ -4,6 +4,7 @@ import csv
 import re
 from slugify import slugify
 import os
+from datetime import date
 
 TITRES = [ #liste des entêtes
         'product_page_url',
@@ -18,9 +19,16 @@ TITRES = [ #liste des entêtes
         'image_url'
         ] 
 
-repertoire = os.getcwd() 
-print(repertoire)
-print(os.listdir())
+# Initialisation du répertoire de résultat de scrapping avec la mention du jour où le script a été éxécuté
+# le nom du fichier comprendra la date en cas d'une utilisation par jour pour un suivi précis de l'activité du site ciblé
+
+today = date.today().strftime("%d-%m-%Y") 
+# Date du jour format européen
+repertoire = os.getcwd()
+repdate = f'{repertoire}\Résultats du {today}'
+os.mkdir(repdate)
+reptravail = os.chdir(repdate)
+
   
 def scrap_produit(url):
     """
