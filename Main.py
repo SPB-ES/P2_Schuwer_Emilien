@@ -18,7 +18,9 @@ TITRES = [ #liste des entêtes
         'image_url'
         ] 
 
-
+repertoire = os.getcwd() 
+print(repertoire)
+print(os.listdir())
   
 def scrap_produit(url):
     """
@@ -175,5 +177,3 @@ taille_categorie = 0
 #         completion_categorie += 1
 #         recup_url_livre(x)
 #         print(f'Avancement catégorie : {completion_categorie} sur {taille_categorie}')
-
-print ('test ok !') 
