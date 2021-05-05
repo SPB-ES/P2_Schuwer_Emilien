@@ -103,6 +103,7 @@ def scrap_produit(url):
     except:
         reptravail = os.chdir(f'{repdate}/{resultat[7]}')
 
+
     with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Créer le CSV et placer les entêtes
         test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
         test_writer.writerow(TITRES)
