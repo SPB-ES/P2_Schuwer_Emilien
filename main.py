@@ -110,7 +110,8 @@ def scrap_produit(url):
         test_writer.writerow(resultat)
     
 
-    img_data = requests.get(resultat[9]).content #Télécharge l'image depuis l'url
+    img_data = requests.get(resultat[9]).content 
+    #Télécharge l'image depuis l'url
     # Mise en place d'une vérification que le titre ne fasse pas plus de 150 caractères (taille limite du titre d'un fichier)
     try:
         with open(f'{resultat[2]}.jpg', 'wb') as handler:
@@ -173,8 +174,8 @@ def recup_url_livre(urlcat):
     soup = bs(r.content,'lxml')
     liste_livres = list()
 
-    nombre_livres_categorie = soup.find('form',{'class':'form-horizontal'}).text #Extrait le texte nombre de livre de la catégorie
-    nombre_livres_categorie = int(re.findall(r'\d+', nombre_livres_categorie)[0]) #regex utilsée pour extraire seulement le nombre
+    nombre_livres_categorie = soup.find('form',{'class':'form-horizontal'}).text # Extraction du texte nombre de livre de la catégorie
+    nombre_livres_categorie = int(re.findall(r'\d+', nombre_livres_categorie)[0]) # Regex utilsée pour extraire seulement le nombre
 
     nombres_pages_categorie = nombre_livres_categorie // 20 # Détermine le nombre de page à partir d'un nombre d'article
 
