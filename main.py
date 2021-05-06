@@ -100,18 +100,22 @@ def scrap_produit(url):
     try:
         os.mkdir(f'{repdate}/{resultat[7]}')
         reptravail = os.chdir(f'{repdate}/{resultat[7]}')
+
+        with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Créer le CSV et placer les entêtes
+            test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
+            test_writer.writerow(TITRES)
     except:
         reptravail = os.chdir(f'{repdate}/{resultat[7]}')
 
 
     with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Créer le CSV et placer les entêtes
         test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
-        test_writer.writerow(TITRES)
+        # test_writer.writerow(TITRES)
         test_writer.writerow(resultat)
     
 
     img_data = requests.get(resultat[9]).content 
-    #Télécharge l'image depuis l'url
+    # Télécharge l'image depuis l'url
     # Mise en place d'une vérification que le titre ne fasse pas plus de 150 caractères (taille limite du titre d'un fichier)
     try:
         with open(f'{resultat[2]}.jpg', 'wb') as handler:
@@ -154,6 +158,7 @@ def recuperer_categorie():
             # nombre de lien résultat pertinent pour les liens de catégories
             # Faiblesse de cette méthode si le nombre de catégorie augmente les prochaines ne seront pas prisent en compte
             cat_name.append((category.text).strip())
+
             cat_url.append('http://books.toscrape.com/catalogue/category'+((category.get('href'))[2:]))
         else:
             break
