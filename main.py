@@ -101,16 +101,15 @@ def scrap_produit(url):
         os.mkdir(f'{repdate}/{resultat[7]}')
         reptravail = os.chdir(f'{repdate}/{resultat[7]}')
 
-        with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Créer le CSV et placer les entêtes
+        with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Crée le CSV et place les entêtes
             test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
             test_writer.writerow(TITRES)
     except:
         reptravail = os.chdir(f'{repdate}/{resultat[7]}')
 
 
-    with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Créer le CSV et placer les entêtes
-        test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
-        # test_writer.writerow(TITRES)
+    with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Rempli le CSV crée en même que le sous dossier
+        test_writer = csv.writer(test, quoting=csv.QUOTE_ALL
         test_writer.writerow(resultat)
     
 
@@ -154,10 +153,8 @@ def recuperer_categorie():
     cat_url = list()
     for category in categories:
         if a <=49: 
-            # bonne valeur 52
             # nombre de lien résultat pertinent pour les liens de catégories
             # Faiblesse de cette méthode si le nombre de catégorie augmente les prochaines ne seront pas prisent en compte
-            cat_name.append((category.text).strip())
 
             cat_url.append('http://books.toscrape.com/catalogue/category'+((category.get('href'))[2:]))
         else:
@@ -190,12 +187,13 @@ def recup_url_livre(urlcat):
     url_livres = (soup.find_all('h3'))
     taille = len(url_livres)
     completion = 0
+    
     for url_livre in url_livres:
         completion += 1
         scrap_produit('http://books.toscrape.com/catalogue/'+ (url_livre.a['href'])[9:])
 
         print(f'Avancement: {completion} sur {nombre_livres_categorie}')
-        print('-----------------------------------------------------------------')
+        print('------------------------------------------------------------------')
     
     if nombres_pages_categorie > 1:
         
@@ -221,4 +219,4 @@ for x in recuperer_categorie():
         completion_categorie += 1
         recup_url_livre(x)
         print(f'Avancement catégorie : {completion_categorie} sur {taille_categorie}')
-        print('_________________________________________________________________________')
+        print('__________________________________________________________________')
