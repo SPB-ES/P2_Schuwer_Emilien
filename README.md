@@ -18,7 +18,7 @@ Vérifier avant de lancer le script qu'un fichier du résultat du jour ne s'y tr
      pip install -r requirements.txt
 
 4) Exécution du Script:
-     python Main.py
+     python main.py
 
 
 Enjoy !:)
