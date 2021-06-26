@@ -5,6 +5,8 @@ import re
 from slugify import slugify
 import os
 from datetime import date
+import concurrent.futures
+from time import perf_counter
 
 TITRES = [ #liste des entêtes
         'product_page_url',
@@ -97,27 +99,53 @@ def scrap_produit(url):
 
 
     # Création de l'outil pour créer les sous répertoires pour chaque catégorie
-    try:
-        os.mkdir(f'{repdate}/{resultat[7]}')
-        reptravail = os.chdir(f'{repdate}/{resultat[7]}')
 
-        with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Crée le CSV et place les entêtes
-            test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
-            test_writer.writerow(TITRES)
-    except:
-        reptravail = os.chdir(f'{repdate}/{resultat[7]}')
+    '''---------------------Version avec sous dossier en éxecution standard----------------------------------------'''
+
+    # try:
+    #     os.mkdir(f'{repdate}/{resultat[7]}')
+    #     reptravail = os.chdir(f'{repdate}/{resultat[7]}')
+
+    #     with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Crée le CSV et place les entêtes
+    #         test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
+    #         test_writer.writerow(TITRES)
+    # except:
+    #     reptravail = os.chdir(f'{repdate}/{resultat[7]}')
 
 
+    # with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Rempli le CSV crée en même que le sous dossier
+    #     test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
+    #     test_writer.writerow(resultat)
+
+    # img_data = requests.get(resultat[9]).content 
+    # # Télécharge l'image depuis l'url
+    # # Mise en place d'une vérification que le titre ne fasse pas plus de 150 caractères (taille limite du titre d'un fichier)
+    # try:
+    #     with open(f'{resultat[7]}  {resultat[2]}.jpg', 'wb') as handler:
+    #         handler.write(img_data)
+    # except:
+    #     titre = list()
+    #     compteur = 0
+    #     for i in resultat[2]:
+    #         if compteur <= 149:
+    #             titre.append(resultat[2][compteur])
+    #             compteur += 1
+    #         else:
+    #             continue
+    #     titre = ''.join(titre)
+    #     with open(f'{titre}.jpg', 'wb') as handler:
+    #         handler.write(img_data)
+
+    '''--------------------------------------Version sans sous dossier en Threading ------------------------------'''
     with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Rempli le CSV crée en même que le sous dossier
-        test_writer = csv.writer(test, quoting=csv.QUOTE_ALL
+        test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
         test_writer.writerow(resultat)
-    
 
     img_data = requests.get(resultat[9]).content 
     # Télécharge l'image depuis l'url
     # Mise en place d'une vérification que le titre ne fasse pas plus de 150 caractères (taille limite du titre d'un fichier)
     try:
-        with open(f'{resultat[2]}.jpg', 'wb') as handler:
+        with open(f'{resultat[7]} - {resultat[2]}.jpg', 'wb') as handler:
             handler.write(img_data)
     except:
         titre = list()
@@ -131,10 +159,8 @@ def scrap_produit(url):
         titre = ''.join(titre)
         with open(f'{titre}.jpg', 'wb') as handler:
             handler.write(img_data)
-
-        
     
-
+'''---------------------------------------------------------------------------------------------------------------'''
 
 
 def recuperer_categorie():
@@ -162,7 +188,7 @@ def recuperer_categorie():
         a += 1
     return cat_url
 
-
+'''--------------------------------------------------------------------------------------------------------'''
 
 def recup_url_livre(urlcat):
     """
@@ -215,8 +241,17 @@ def recup_url_livre(urlcat):
 completion_categorie = 0
 taille_categorie = len(recuperer_categorie())
 
-for x in recuperer_categorie():
-        completion_categorie += 1
-        recup_url_livre(x)
-        print(f'Avancement catégorie : {completion_categorie} sur {taille_categorie}')
-        print('__________________________________________________________________')
+categorie = (recuperer_categorie())
+print(categorie)
+
+# for x in recuperer_categorie():
+#         completion_categorie += 1
+#         recup_url_livre(x)
+#         print(f'Avancement catégorie : {completion_categorie} sur {taille_categorie}')
+#         print('__________________________________________________________________')
+Start = perf_counter()
+with concurrent.futures.ThreadPoolExecutor() as executor:
+        executor.map(recup_url_livre,categorie)
+Temps = perf_counter() - Start
+
+print(f'Le script a été exécuté en {Temps}')
