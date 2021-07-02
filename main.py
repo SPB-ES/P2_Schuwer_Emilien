@@ -98,66 +98,32 @@ def scrap_produit(url):
 
 
 
-    # Création de l'outil pour créer les sous répertoires pour chaque catégorie
-
-    '''---------------------Version avec sous dossier en éxecution standard----------------------------------------'''
-
-    # try:
-    #     os.mkdir(f'{repdate}/{resultat[7]}')
-    #     reptravail = os.chdir(f'{repdate}/{resultat[7]}')
-
-    #     with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Crée le CSV et place les entêtes
-    #         test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
-    #         test_writer.writerow(TITRES)
-    # except:
-    #     reptravail = os.chdir(f'{repdate}/{resultat[7]}')
-
-
-    # with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Rempli le CSV crée en même que le sous dossier
-    #     test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
-    #     test_writer.writerow(resultat)
-
-    # img_data = requests.get(resultat[9]).content 
-    # # Télécharge l'image depuis l'url
-    # # Mise en place d'une vérification que le titre ne fasse pas plus de 150 caractères (taille limite du titre d'un fichier)
-    # try:
-    #     with open(f'{resultat[7]}  {resultat[2]}.jpg', 'wb') as handler:
-    #         handler.write(img_data)
-    # except:
-    #     titre = list()
-    #     compteur = 0
-    #     for i in resultat[2]:
-    #         if compteur <= 149:
-    #             titre.append(resultat[2][compteur])
-    #             compteur += 1
-    #         else:
-    #             continue
-    #     titre = ''.join(titre)
-    #     with open(f'{titre}.jpg', 'wb') as handler:
-    #         handler.write(img_data)
-
+   
     '''--------------------------------------Version sans sous dossier en Threading ------------------------------'''
-    with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Rempli le CSV crée en même que le sous dossier
+
+    with open (f'{resultat[7]}.csv','a',newline='',encoding="utf-8") as test: # Rempli le CSV crée
         test_writer = csv.writer(test, quoting=csv.QUOTE_ALL)
         test_writer.writerow(resultat)
 
     img_data = requests.get(resultat[9]).content 
     # Télécharge l'image depuis l'url
     # Mise en place d'une vérification que le titre ne fasse pas plus de 150 caractères (taille limite du titre d'un fichier)
+
     try:
         with open(f'{resultat[7]} - {resultat[2]}.jpg', 'wb') as handler:
             handler.write(img_data)
     except:
         titre = list()
         compteur = 0
+        taillelimite = 149 - (len(resultat[7]) + 3)
         for i in resultat[2]:
-            if compteur <= 149:
+            if compteur <= taillelimite:
                 titre.append(resultat[2][compteur])
                 compteur += 1
             else:
                 continue
         titre = ''.join(titre)
-        with open(f'{titre}.jpg', 'wb') as handler:
+        with open(f'{resultat[7]} - {titre}.jpg', 'wb') as handler:
             handler.write(img_data)
     
 '''---------------------------------------------------------------------------------------------------------------'''
@@ -182,13 +148,14 @@ def recuperer_categorie():
             # nombre de lien résultat pertinent pour les liens de catégories
             # Faiblesse de cette méthode si le nombre de catégorie augmente les prochaines ne seront pas prisent en compte
 
-            cat_url.append('http://books.toscrape.com/catalogue/category'+((category.get('href'))[2:]))
+            cat_url.append([('http://books.toscrape.com/catalogue/category'+((category.get('href'))[2:])),((category.text).replace(' ','').replace('\n',''))]) 
+            # Création Liste d'url des catégories avec nom pour afficher une progression de l'éxécution du multithreading
         else:
             break
-        a += 1
+        a += 1  
     return cat_url
 
-'''--------------------------------------------------------------------------------------------------------'''
+'''---------------------------------------------------------------------------------------------------------------------'''
 
 def recup_url_livre(urlcat):
     """
@@ -198,7 +165,7 @@ def recup_url_livre(urlcat):
 
     """
    
-    r = requests.get(urlcat)
+    r = requests.get(urlcat[0])
     soup = bs(r.content,'lxml')
     liste_livres = list()
 
@@ -218,40 +185,35 @@ def recup_url_livre(urlcat):
         completion += 1
         scrap_produit('http://books.toscrape.com/catalogue/'+ (url_livre.a['href'])[9:])
 
-        print(f'Avancement: {completion} sur {nombre_livres_categorie}')
-        print('------------------------------------------------------------------')
+        print(f'Avancement {urlcat[1]}: {completion} sur {nombre_livres_categorie}')
+        
     
     if nombres_pages_categorie > 1:
         
         for num_page in range(2,nombres_pages_categorie + 1):
-            url_page = urlcat[:-10] + 'page-'+ str(num_page) + '.html'
+            url_page = urlcat[0][:-10] + 'page-'+ str(num_page) + '.html'
             r = requests.get(url_page)
             soup = bs(r.content,'lxml')
             url_livres = (soup.find_all('h3'))
             for url_livre in url_livres:
                 completion += 1
                 scrap_produit('http://books.toscrape.com/catalogue/'+ (url_livre.a['href'])[9:])
-                print(f'Avancement: {completion} sur {nombre_livres_categorie}')
-                print('-----------------------------------------------------------------')
+                print(f'Avancement {urlcat[1]}: {completion} sur {nombre_livres_categorie}')
+                
 
     nombre_livres_categorie = 0
     url_livres =''
 
+'''--------------------------------------Préparation à l'utilisation du MultiThreading-------------------'''
 
 completion_categorie = 0
 taille_categorie = len(recuperer_categorie())
 
-categorie = (recuperer_categorie())
-print(categorie)
+categorie = (recuperer_categorie()) # Création de la liste pour être utilisable en MultiThreading
 
-# for x in recuperer_categorie():
-#         completion_categorie += 1
-#         recup_url_livre(x)
-#         print(f'Avancement catégorie : {completion_categorie} sur {taille_categorie}')
-#         print('__________________________________________________________________')
 Start = perf_counter()
 with concurrent.futures.ThreadPoolExecutor() as executor:
         executor.map(recup_url_livre,categorie)
 Temps = perf_counter() - Start
 
-print(f'Le script a été exécuté en {Temps}')
+print(f'Le script a été exécuté en {round(Temps,0)} secondes')
